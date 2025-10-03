@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class MainConsole {
-    public static void run(SesionService service){
+    public static void run(SesionService service) {
         Scanner sc = new Scanner(System.in);
         int op = -1;
         while (op != 0) {
@@ -22,11 +22,14 @@ public class MainConsole {
                     System.out.print("Nombre: "); String n = sc.nextLine();
                     System.out.print("Documento: "); String d = sc.nextLine();
                     System.out.print("Curso [Prog 1/Prog 2/Base de Datos]: "); String c = sc.nextLine();
-                    service.registrar(n,d,c);
+                    service.registrar(n, d, c);
                     System.out.println("✔ Registrado");
                 }
                 case 2 -> listar(service.listar());
-                case 3 -> { System.out.print("Buscar: "); String q = sc.nextLine(); listar(service.buscar(q)); }
+                case 3 -> {
+                    System.out.print("Buscar: "); String q = sc.nextLine();
+                    listar(service.buscar(q));
+                }
                 case 4 -> System.out.println(service.resumen());
                 case 0 -> System.out.println("Adiós");
                 default -> System.out.println("Opción inválida");
@@ -34,14 +37,10 @@ public class MainConsole {
         }
     }
 
-    private static void listar(List<Inscripcion> ls){
-        System.out.println("\n--- LISTADO ---");
+    private static void listar(List<Inscripcion> ls) {
         System.out.println("Nombre | Documento | Curso | Hora");
-        for (Inscripcion i: ls) {
-            // Se usa substring para formatear la hora (quitar T y milisegundos)
-            String hora = i.getFechaHora().toString().replace("T", " ").substring(0, 19);
-            System.out.println(i.getNombre()+" | "+i.getDocumento()+" | "+i.getCurso()+" | "+hora);
+        for (Inscripcion i : ls) {
+            System.out.println(i.getNombre() + " | " + i.getDocumento() + " | " + i.getCurso() + " | " + i.getFechaHora());
         }
-        System.out.println("-----------------");
     }
 }

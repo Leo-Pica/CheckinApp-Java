@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class Inscripcion {
     private final String nombre;
     private final String documento;
-    private final String curso; // "Prog 1" | "Prog 2" | "Base de Datos"
+    private final String curso;
     private final LocalDateTime fechaHora;
 
     public Inscripcion(String nombre, String documento, String curso, LocalDateTime fechaHora) {

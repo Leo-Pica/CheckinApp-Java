@@ -1,48 +1,55 @@
 package edu.cerp.checkin.logic;
 
 import edu.cerp.checkin.model.Inscripcion;
-
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/** Lógica mínima en memoria (sin validaciones complejas). */
 public class SesionService {
-    private final List<Inscripcion> inscripciones = new ArrayList<>();
-    
-    // NOTA: No es necesario definir el constructor sin argumentos (SesionService()) 
-    // porque Java lo crea por defecto.
 
-    public void registrar(String nombre, String documento, String curso) {
-        if (nombre == null || nombre.isBlank()) nombre = "(sin nombre)";
-        if (documento == null) documento = "";
-        if (curso == null || curso.isBlank()) curso = "Prog 1";
-        inscripciones.add(new Inscripcion(nombre.trim(), documento.trim(), curso.trim(), LocalDateTime.now()));
+    private final Map<String, Inscripcion> inscripciones;
+
+    public SesionService() {
+        this.inscripciones = new LinkedHashMap<>();
     }
 
-    public List<Inscripcion> listar() { return Collections.unmodifiableList(inscripciones); }
+    public void cargarDatosDemo() {
+        registrar("Ana Pérez", "11234567", "Programación 1");
+        registrar("Luis Gómez", "22345678", "Redes de Datos");
+        registrar("María Sol", "33456789", "Bases de Datos");
+        registrar("Juan Díaz", "44567890", "Programación 1");
+        registrar("Emi Fernández", "55678901", "Bases de Datos");
+    }
 
-    public List<Inscripcion> buscar(String q) {
-        if (q == null || q.isBlank()) return listar();
-        String s = q.toLowerCase();
-        return inscripciones.stream()
-                .filter(i -> i.getNombre().toLowerCase().contains(s) || i.getDocumento().toLowerCase().contains(s))
+    public void registrar(String nombre, String documento, String curso) {
+        Inscripcion nuevaInscripcion = new Inscripcion(nombre, documento, curso, LocalDateTime.now());
+        inscripciones.put(documento, nuevaInscripcion);
+    }
+
+    public List<Inscripcion> listar() {
+        return inscripciones.values().stream()
+                .sorted(Comparator.comparing(Inscripcion::getFechaHora))
+                .collect(Collectors.toList());
+    }
+
+    public List<Inscripcion> buscar(String query) {
+        String lowerCaseQuery = query.toLowerCase();
+        return inscripciones.values().stream()
+                .filter(i -> i.getNombre().toLowerCase().contains(lowerCaseQuery) ||
+                             i.getDocumento().contains(lowerCaseQuery) ||
+                             i.getCurso().toLowerCase().contains(lowerCaseQuery))
                 .collect(Collectors.toList());
     }
 
     public String resumen() {
-        Map<String, Long> porCurso = inscripciones.stream()
-                .collect(Collectors.groupingBy(Inscripcion::getCurso, LinkedHashMap::new, Collectors.counting()));
-        StringBuilder sb = new StringBuilder();
-        sb.append("Total: ").append(inscripciones.size()).append("\nPor curso:\n");
-        for (var e : porCurso.entrySet()) sb.append(" - ").append(e.getKey()).append(": ").append(e.getValue()).append("\n");
-        return sb.toString();
-    }
+        Map<String, Long> resumenCursos = inscripciones.values().stream()
+                .collect(Collectors.groupingBy(Inscripcion::getCurso, Collectors.counting()));
 
-    /** Datos de prueba para arrancar la app. */
-    public void cargarDatosDemo() {
-        registrar("Ana Pérez", "51234567", "Prog 2");
-        registrar("Luis Gómez", "49887766", "Prog 1");
-        registrar("Camila Díaz", "53422110", "Base de Datos");
+        StringBuilder sb = new StringBuilder();
+        resumenCursos.forEach((curso, count) -> {
+            sb.append(curso).append(": ").append(count).append(" inscriptos\n");
+        });
+
+        return sb.toString();
     }
 }
