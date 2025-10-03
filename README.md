@@ -34,4 +34,4 @@ Para correr esta aplicación en tu máquina local:
 ## 📌 Estado del Proyecto
 
 * **Estado:** En desarrollo / Versión inicial.
-* **Autor:** [Tu Nombre o Usuario de GitHub]
+* **Autor:** [Leo-Pica]
